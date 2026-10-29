@@ -1,16 +1,23 @@
 <!DOCTYPE html>
-<html lang="en-IN">
+<!-- Light version only (client request). To bring dark mode back: remove data-theme="light" below and uncomment the theme script + toggle button. -->
+<html lang="en-IN" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Thank you | AdsTube Diwali Offer 2026</title>
   <meta name="robots" content="noindex" />
-  <meta name="theme-color" content="#0A0A0B" />
+  <meta name="theme-color" content="#FFF9F2" />
+  <!-- Favicon: AdsTube logo mark -->
+  <link rel="icon" href="assets/favicon.ico" sizes="32x32" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <!-- Dark mode disabled:
   <script>try{var t=localStorage.getItem('adstube_theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+  -->
 </head>
 <body class="mbar-hidden">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -48,7 +55,7 @@
     </div>
   </main>
 
-  <button class="theme-btn theme-btn--float" type="button" data-theme-toggle aria-label="Switch to light mode"><svg class="ic" data-theme-icon><use href="#i-sun"/></svg></button>
+  <!-- Dark mode disabled: <button class="theme-btn theme-btn--float" type="button" data-theme-toggle aria-label="Switch to light mode"><svg class="ic" data-theme-icon><use href="#i-sun"/></svg></button> -->
 
 
   <script src="js/script.js" defer></script>

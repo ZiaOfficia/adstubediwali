@@ -110,7 +110,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .ic { width: 18px; height: 18px; flex: none; }
 .ic--red { color: var(--red); }
 .ic--gold { color: var(--gold); }
-.ic--blue { color: #1877F2; }
 
 .skip-link {
   position: absolute; left: 16px; top: -60px; z-index: 200;
@@ -311,7 +310,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .float-chip .ic { width: 16px; height: 16px; }
 .float-chip--yt { top: 14px; right: 0; }
 .float-chip--g { top: 46%; left: -6px; animation-delay: -1.5s; }
-.float-chip--m { top: 66%; right: -4px; animation-delay: -3s; }
 
 /* Diyas */
 .diyas { position: absolute; left: 0; right: 0; bottom: 6px; display: flex; justify-content: center; align-items: flex-end; gap: 36px; }
@@ -402,6 +400,53 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .terms__title { font-weight: 700; color: var(--heading); margin-bottom: 6px; }
 .packages { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; padding: 16px 20px; border: 1px dashed rgba(245,184,65,.4); border-radius: var(--radius); }
 .packages b { color: var(--heading); margin-right: 4px; }
+
+/* ---------- Diwali plan creatives ---------- */
+.plans__tabs { display: flex; gap: 10px; margin: -12px 0 28px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+.plans__tabs::-webkit-scrollbar { display: none; }
+.plans__tab {
+  flex: none; min-height: 44px; padding: 0 18px; border-radius: 999px; font-weight: 600; font-size: 14px;
+  background: var(--surface); border: 1px solid var(--line); color: var(--text-2); transition: border-color .2s, background .2s, color .2s;
+}
+.plans__tab:hover { border-color: var(--gold); }
+.plans__tab[aria-selected="true"] { background: var(--red); border-color: var(--red); color: #fff; box-shadow: var(--glow); }
+.plans__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px; }
+.plans__note { margin-top: 24px; color: var(--muted); font-size: 15px; }
+.plans__note b { color: var(--heading); }
+
+/* Each card is a festive poster: deep red, gold rangoli, light string, diya */
+.plan {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; flex-direction: column; min-height: 330px; padding: 22px 22px 20px;
+  border-radius: 22px; color: #fff; border: 1px solid rgba(245,184,65,.45);
+  background:
+    radial-gradient(120% 70% at 50% -10%, rgba(255,190,70,.35), transparent 60%),
+    linear-gradient(165deg, #C4000D 0%, #7A0008 55%, #2B0004 100%);
+  box-shadow: 0 18px 40px rgba(138,0,8,.35);
+  animation: planIn .5s var(--ease) both; animation-delay: calc(var(--i) * 60ms);
+  transition: transform .3s var(--ease), box-shadow .3s;
+}
+.plan:hover { transform: translateY(-6px); box-shadow: 0 26px 50px rgba(138,0,8,.45), 0 0 0 1px rgba(245,184,65,.7); }
+@keyframes planIn { from { opacity: 0; transform: translateY(16px); } }
+.plan::before { /* rangoli mandala in the corner */
+  content: ""; position: absolute; z-index: -1; right: -70px; bottom: -70px; width: 220px; height: 220px; border-radius: 50%; opacity: .22;
+  background:
+    radial-gradient(circle, transparent 28%, #F5B841 29%, #F5B841 31%, transparent 32%, transparent 52%, #F5B841 53%, #F5B841 55%, transparent 56%),
+    repeating-conic-gradient(#F5B841 0 6deg, transparent 6deg 22.5deg);
+  -webkit-mask: radial-gradient(circle, #000 70%, transparent 71%); mask: radial-gradient(circle, #000 70%, transparent 71%);
+}
+.plan::after { /* light string along the top */
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 10px; z-index: -1;
+  background: radial-gradient(circle at 9px 5px, #FFD36B 2px, rgba(255,211,107,.35) 3.5px, transparent 5px) 0 0 / 18px 10px repeat-x;
+}
+.plan__badge { align-self: flex-start; margin-top: 4px; font-size: 12px; font-weight: 700; color: #2B0004; background: linear-gradient(90deg, #F5B841, #FFD873); border-radius: 999px; padding: 4px 10px; }
+.plan__icon { position: absolute; top: 22px; right: 20px; width: 30px; height: 30px; color: #fff; --yt-play: #C4000D; opacity: .95; }
+.plan__svc { margin-top: 18px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #FFD873; }
+.plan__qty { font-family: var(--font-head); font-weight: 800; font-size: 44px; line-height: 1.05; letter-spacing: -.02em; margin-top: 4px; }
+.plan__unit { font-weight: 600; font-size: 15px; color: rgba(255,255,255,.88); min-height: 2.6em; }
+.plan__price { margin: auto 0 14px; padding-top: 12px; font-family: var(--font-head); font-weight: 800; font-size: 34px; color: #FFD36B; text-shadow: 0 0 22px rgba(255,190,60,.55); }
+.plan__buy { position: relative; z-index: 1; }
+.plan__diya { position: absolute; right: 18px; bottom: 76px; transform: scale(.55); transform-origin: bottom right; pointer-events: none; }
 
 /* ---------- Cards ---------- */
 .cards { display: grid; gap: 20px; }
@@ -508,7 +553,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   transition: border-color .2s, box-shadow .2s;
 }
 .field select { appearance: none; -webkit-appearance: none; padding-right: 40px; background: var(--f-bg, #fff) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2371717A' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center; }
-.field select:disabled { background-color: #F4F4F5; color: #A1A1AA; cursor: not-allowed; }
+.field select:disabled { background-color: var(--f-disabled, #F4F4F5); color: var(--f-ph, #A1A1AA); cursor: not-allowed; }
 .field input::placeholder { color: var(--f-ph, #A1A1AA); }
 .field input:focus, .field select:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 4px rgba(232,0,15,.12); }
 .tel { display: flex; border: 1.5px solid var(--f-line, #E4E4E7); border-radius: 12px; overflow: hidden; transition: border-color .2s, box-shadow .2s; }
@@ -534,6 +579,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .captcha__brand { margin-left: auto; font-size: 10px; font-weight: 700; color: #71717A; letter-spacing: .08em; }
 .field.is-invalid .captcha { border-color: #DC2626; }
 
+.form-card__rates { font-size: 14px; font-weight: 500; color: var(--f-label, #27272A); background: var(--f-cc, #F4F4F5); border-radius: 10px; padding: 10px 14px; margin: 4px 0 8px; }
 .form-card .btn--block { margin-top: 8px; }
 .form-card .btn[disabled] { opacity: .7; pointer-events: none; }
 .form__status { font-size: 14px; color: #DC2626; margin-top: 10px; }
@@ -637,32 +683,55 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .theme-btn--float { position: fixed; top: 20px; right: 20px; z-index: 70; background: var(--glass); backdrop-filter: blur(8px); }
 
 
+/* ---------- Opening fireworks (canvas added by JS) ---------- */
+.fx, .fx[popover] {
+  position: fixed; inset: 0; width: 100vw; height: 100vh; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; background: transparent; overflow: hidden;
+  pointer-events: none; z-index: 9999;
+}
+
 /* ---------- Pop-up form ---------- */
 .pop {
-  width: min(440px, 100% - 32px); max-height: calc(100dvh - 32px); padding: 0; border: 0;
-  background: transparent; overflow: visible; color: inherit;
+  width: min(600px, 100% - 24px); max-height: calc(100dvh - 24px); padding: 0; border: 0;
+  background: transparent; overflow: hidden; color: inherit; border-radius: 22px;
 }
 .pop[open] { animation: popIn .45s var(--ease); }
 .pop::backdrop { background: rgba(5,5,6,.72); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 :root[data-theme="light"] .pop::backdrop { background: rgba(60,20,10,.45); }
 @keyframes popIn { from { opacity: 0; transform: translateY(24px) scale(.96); } }
+.pop__card:focus { outline: none; } /* receives focus on open, so no ring lands on the close button */
 .pop__card {
-  max-height: calc(100dvh - 32px); overflow-y: auto; padding-top: 30px;
+  max-height: calc(100dvh - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 22px 26px 0;
   background: var(--surface); color: var(--text); border: 1px solid var(--line); border-top: 4px solid var(--red);
   box-shadow: 0 30px 80px var(--shadow-deep), 0 0 60px rgba(232,0,15,.25);
   --f-title: var(--heading); --f-note: var(--muted); --f-label: var(--text-2); --f-text: var(--heading);
   --f-bg: var(--surface-2); --f-line: var(--line); --f-ph: var(--muted); --f-cc: var(--bg); --f-cc-text: var(--text-2);
+  --f-disabled: var(--bg);
 }
+/* Compact spacing so the whole form fits a laptop screen */
+.pop .form-card__title { font-size: 23px; padding-right: 44px; }
+.pop .form-card__note { margin: 4px 0 14px; }
+.pop .form-row { gap: 14px; }
+.pop .field { margin-bottom: 12px; }
+.pop .field label { margin-bottom: 5px; }
+.pop .field input, .pop .field select { height: 46px; }
+.pop .form-card__rates { font-size: 13px; padding: 8px 12px; margin: 0 0 4px; }
+.pop__foot {
+  position: sticky; bottom: 0; z-index: 2; margin: 0 -26px; padding: 10px 26px 6px;
+  background: var(--surface); box-shadow: 0 -14px 18px -14px var(--shadow-deep);
+}
+.pop__foot .btn--block { margin-top: 0; }
+.pop__foot .form__status { margin-top: 6px; }
 .pop__close {
-  position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%;
+  position: absolute; top: 16px; right: 16px; z-index: 3; width: 40px; height: 40px; border-radius: 50%;
   display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line); color: var(--heading); transition: background .2s, transform .2s;
 }
 .pop__close:hover { border-color: var(--red); transform: rotate(90deg); }
-.pop__head { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 14px; }
+.pop__head { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 8px; }
 .pop__diya { width: 44px; height: 50px; flex: none; transform: scale(.75); transform-origin: bottom left; }
 .pop__tag { font-size: 13px; font-weight: 700; color: var(--gold); background: var(--gold-soft); border-radius: 999px; padding: 4px 12px; }
 .pop__accent { color: var(--red); }
-.pop__skip { display: block; margin: 12px auto 0; background: none; border: 0; color: var(--muted); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; min-height: 40px; }
+.pop__skip { display: block; margin: 2px auto 0; background: none; border: 0; color: var(--muted); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; min-height: 36px; }
 .pop__skip:hover { color: var(--heading); }
 /* ---------- Mobile sticky bar ---------- */
 .mbar { display: none; }
@@ -721,7 +790,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .hero__visual { padding: 34px 6px 120px; }
   .float-chip { font-size: 12px; padding: 6px 11px; }
   .float-chip--g { top: 14px; left: 0; }
-  .float-chip--m { top: auto; bottom: 150px; }
   .diyas { gap: 24px; }
   .diya { transform: scale(.85); transform-origin: bottom center; }
   .diya--lg { transform: scale(1.1); }
@@ -734,6 +802,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .report { padding: 18px; }
   .form-row { grid-template-columns: 1fr; gap: 0; }
   .form-card { padding: 26px 20px; }
+  .pop__card { padding: 18px 18px 0; }
+  .pop__foot { margin: 0 -18px; padding: 10px 18px 4px; }
+  .pop .form-card__title { font-size: 20px; }
+  .pop .form-row { gap: 0; }
   .final .btn { width: 100%; }
   .footer__grid { grid-template-columns: 1fr; gap: 28px; }
 

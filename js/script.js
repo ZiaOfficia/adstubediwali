@@ -24,12 +24,24 @@ const CONFIG = {
   // IDs to add in GTM: G-XXXXXXXXXX · AW-XXXXXXXXX · Meta PIXEL_ID
   gtmId: 'GTM-XXXXXXX',
 
-  // Query form: plan list changes with the service picked
+  // "Select plan" options for each service (all forms)
   plans: {
-    'YouTube Video Ads': ['Starter — ₹4,999/month', 'Growth — ₹9,999/month', 'Pro — ₹19,999/month'],
-    'Google Ads':        ['Starter — ₹4,999/month', 'Growth — ₹9,999/month', 'Pro — ₹19,999/month'],
-    'Meta Ads':          ['Starter — ₹4,999/month', 'Growth — ₹9,999/month', 'Pro — ₹19,999/month'],
-    'Video Marketing':   ['Video production — from ₹7,999', 'Video SEO — ₹2,999/video', 'Production + promotion — from ₹14,999']
+    'YouTube Views': [
+      '5,000 views — ₹499', '10,000 views — ₹999', '20,000 views — ₹1,899', '50,000 views — ₹2,999',
+      '1,00,000 views — ₹4,999', '5,00,000 views — ₹11,999', '10,00,000 views — ₹21,999'
+    ],
+    'YouTube Subscribers': [
+      '100 subscribers — ₹349', '200 subscribers — ₹699', '500 subscribers — ₹1,499', '1,000 subscribers — ₹2,999'
+    ],
+    'YouTube Monetization': [
+      '2,000 hours + 2.5–3 lakh views — ₹18,999', '3,000 hours + 4.5–5 lakh views — ₹27,999', '4,000 hours + 5–6 lakh views — ₹37,999'
+    ],
+    'YouTube Monetization without views': [
+      '2,000 hours — ₹6,999', '3,000 hours — ₹9,999', '4,000 hours — ₹12,999'
+    ],
+    'Revenue Services': [
+      'Test — ₹1,999', 'Lite — ₹3,999', 'Grow — ₹6,999', 'Amplify — ₹12,999', 'Pro — ₹24,999'
+    ]
   },
 
   // Pop-up form opens after this many seconds on every page load (0 = straight away)
@@ -341,9 +353,7 @@ function initFAQ() {
 const RULES = {
   name:     v => v.trim().length >= 2 || 'Please enter your name.',
   phone:    v => /^[6-9]\d{9}$/.test(v.replace(/\D/g, '')) || 'Enter a valid 10-digit Indian mobile number.',
-  business: v => v.trim().length >= 2 || 'Please enter your business name.',
   service:  v => !!v || 'Please select a service.',
-  budget:   v => !!v || 'Please select a monthly budget range.',
   plan:     v => !!v || 'Please select a plan.',
   video_url: v => {
     if (!v.trim()) return true;
@@ -385,6 +395,19 @@ function bindLiveValidation(form, names, formName) {
   });
 }
 
+// Plan list follows the service picked
+function bindPlans(form) {
+  const service = form.elements.service, plan = form.elements.plan;
+  if (!service || !plan) return;
+  service.addEventListener('change', () => {
+    const list = CONFIG.plans[service.value] || [];
+    plan.innerHTML = '';
+    plan.appendChild(new Option(list.length ? 'Select a plan' : 'Select a service first', ''));
+    list.forEach(p => plan.appendChild(new Option(p, p)));
+    plan.disabled = !list.length;
+    setError(plan, '');
+  });
+}
 function collect(form) {
   const data = {};
   new FormData(form).forEach((v, k) => { if (k !== 'website') data[k] = String(v).trim(); });
@@ -413,12 +436,13 @@ async function postJSON(url, payload) {
 function initLeadForm() {
   $$('[data-lead-form]').forEach(setupLeadForm);
 }
-// Shared by the page form and the pop-up (which only asks name, phone & service)
+// Shared by the page form and the pop-up
 function setupLeadForm(form) {
   const formName = form.dataset.formName || 'lead_form';
-  const fields = ['name', 'phone', 'business', 'service', 'budget'].filter(n => form.elements[n]);
+  const fields = ['name', 'phone', 'video_url', 'service', 'plan'].filter(n => form.elements[n]);
   const status = $('[data-status]', form), btn = $('button[type="submit"]', form);
   bindLiveValidation(form, fields, formName);
+  bindPlans(form);
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -451,7 +475,7 @@ function setupLeadForm(form) {
     // Lead event waits for GTM before redirecting, so the conversion is not lost
     let done = false; const once = () => { if (!done) { done = true; go(); } };
     track('generate_lead', {
-      form_name: formName, lead_type: 'lead', service, budget: form.elements.budget ? form.elements.budget.value : '',
+      form_name: formName, lead_type: 'lead', service, plan: form.elements.plan ? form.elements.plan.value : '',
       eventCallback: once, eventTimeout: 2000
     });
     setTimeout(once, gtmLoaded() ? 2200 : 400);
@@ -472,15 +496,8 @@ function initQueryForm() {
   const service = form.elements.service, plan = form.elements.plan;
   const status = $('[data-status]', form), btn = $('button[type="submit"]', form);
   bindLiveValidation(form, fields, 'query_form');
+  bindPlans(form);
 
-  service.addEventListener('change', () => {
-    const list = CONFIG.plans[service.value] || [];
-    plan.innerHTML = '';
-    plan.appendChild(new Option(list.length ? 'Select a plan' : 'Select a service first', ''));
-    list.forEach(p => plan.appendChild(new Option(p, p)));
-    plan.disabled = !list.length;
-    setError(plan, '');
-  });
 
   const cap = form.elements.captcha;
   cap.addEventListener('change', () => { if (cap.checked) setError(cap, ''); });
@@ -536,18 +553,215 @@ function initMobileBar() {
    --------------------------------------------------------- */
 function initPopup() {
   const pop = $('[data-pop]'); if (!pop || typeof pop.showModal !== 'function') return;
+  $$('[data-pop-close]', pop).forEach(b => b.addEventListener('click', () => pop.close('dismiss')));
+  pop.addEventListener('click', e => { if (e.target === pop) pop.close('dismiss'); }); // backdrop
+  pop.addEventListener('close', () => track('popup_close'));
   if (offerPhase().phase === 'ended') return;
 
   // Opens on every page load (after CONFIG.popupDelay seconds)
   setTimeout(() => {
     if (pop.open || document.querySelector('dialog[open]')) return;
     pop.showModal();
+    document.dispatchEvent(new Event('popupopen')); // keeps the fireworks above the pop-up
     track('popup_open', { trigger: 'page_load' });
   }, CONFIG.popupDelay * 1000);
+}
 
-  $$('[data-pop-close]', pop).forEach(b => b.addEventListener('click', () => pop.close('dismiss')));
-  pop.addEventListener('click', e => { if (e.target === pop) pop.close('dismiss'); }); // backdrop
-  pop.addEventListener('close', () => track('popup_close'));
+/* ---------------------------------------------------------
+   Opening fireworks: cracker blasts + rockets on every page load
+   --------------------------------------------------------- */
+function initFireworks() {
+  if (reducedMotion) return;
+  const canvas = document.createElement('canvas');
+  canvas.className = 'fx';
+  canvas.setAttribute('aria-hidden', 'true');
+  // As a popover the canvas sits in the top layer, above the pop-up form
+  const topLayer = typeof canvas.showPopover === 'function';
+  if (topLayer) canvas.setAttribute('popover', 'manual');
+  document.body.appendChild(canvas);
+  const raise = () => {
+    if (!topLayer || !canvas.isConnected) return;
+    try { if (canvas.matches(':popover-open')) canvas.hidePopover(); canvas.showPopover(); } catch (e) {}
+  };
+  raise();
+  document.addEventListener('popupopen', raise);
+
+  const ctx = canvas.getContext('2d');
+  const COLORS = ['#E8000F', '#F5B841', '#FF7A00', '#FF2D7A', '#FFD34D', '#B4005A', '#FF9F1C'];
+  let w, h, dpr;
+  const resize = () => {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+  resize();
+  window.addEventListener('resize', resize);
+
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const small = w < 680;
+  const rockets = [], sparks = [];
+
+  // Cracker blast: a ring of sparks plus a quick flash
+  const burst = (x, y, big) => {
+    const n = (big ? 90 : 60) * (small ? .6 : 1);
+    const c1 = pick(COLORS), c2 = pick(COLORS);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + rand(-.05, .05);
+      const sp = rand(2, big ? 7 : 5.5);
+      sparks.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, decay: rand(.010, .018), r: rand(1.6, 2.8), c: i % 2 ? c1 : c2, trail: true });
+    }
+    sparks.push({ x, y, vx: 0, vy: 0, life: 1, decay: .06, r: big ? 70 : 48, c: '#FFE7A3', flash: true });
+  };
+
+  // Rockets start low on the screen (bottom or lower sides) and fly to a burst point
+  const launch = () => {
+    const side = Math.random();
+    const sx = side < .2 ? -10 : side > .8 ? w + 10 : rand(w * .1, w * .9);
+    const sy = side < .2 || side > .8 ? rand(h * .55, h * .9) : h + 10;
+    const tx = rand(w * .12, w * .88), ty = rand(h * .12, h * .45);
+    const frames = rand(55, 80);
+    rockets.push({ x: sx, y: sy, vx: (tx - sx) / frames, vy: (ty - sy) / frames, t: 0, frames, c: pick(COLORS) });
+  };
+
+  const drawRocket = (r) => {
+    const ang = Math.atan2(r.vy, r.vx);
+    ctx.save();
+    ctx.translate(r.x, r.y); ctx.rotate(ang);
+    // flame
+    ctx.fillStyle = 'rgba(255,170,40,.9)';
+    ctx.beginPath(); ctx.moveTo(-9, 0); ctx.lineTo(-18 - Math.random() * 8, -3); ctx.lineTo(-18 - Math.random() * 8, 3); ctx.closePath(); ctx.fill();
+    // body + gold nose
+    ctx.fillStyle = r.c; ctx.fillRect(-9, -3, 14, 6);
+    ctx.fillStyle = '#F5B841';
+    ctx.beginPath(); ctx.moveTo(5, -3); ctx.lineTo(11, 0); ctx.lineTo(5, 3); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // sparkly trail
+    sparks.push({ x: r.x - r.vx * 2, y: r.y - r.vy * 2, vx: rand(-.4, .4), vy: rand(.2, .8), life: .8, decay: .045, r: rand(1, 2), c: '#FFB627' });
+  };
+
+  // Schedule: two instant blasts, then rockets from here and there
+  const t0 = performance.now();
+  const schedule = [
+    { at: 0,   fn: () => burst(w * rand(.25, .4), h * rand(.22, .35), true) },
+    { at: 180, fn: () => burst(w * rand(.6, .78), h * rand(.18, .32), true) }
+  ];
+  const count = small ? 6 : 10;
+  for (let i = 0; i < count; i++) schedule.push({ at: 350 + i * rand(220, 330), fn: launch });
+  const DURATION = 6500;
+
+  let raf;
+  const frame = (now) => {
+    const el = now - t0;
+    while (schedule.length && schedule[0].at <= el) schedule.shift().fn();
+    ctx.clearRect(0, 0, w, h);
+
+    for (let i = rockets.length - 1; i >= 0; i--) {
+      const r = rockets[i];
+      r.x += r.vx; r.y += r.vy; r.t++;
+      drawRocket(r);
+      if (r.t >= r.frames) { burst(r.x, r.y, Math.random() > .5); rockets.splice(i, 1); }
+    }
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const p = sparks[i];
+      p.life -= p.decay;
+      if (p.life <= 0) { sparks.splice(i, 1); continue; }
+      ctx.globalAlpha = Math.max(0, p.life);
+      if (p.flash) {
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+        g.addColorStop(0, 'rgba(255,240,190,.9)'); g.addColorStop(1, 'rgba(255,200,80,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+      } else {
+        const ox = p.x, oy = p.y;
+        p.vx *= .985; p.vy = p.vy * .985 + .06; // air drag + gravity
+        p.x += p.vx; p.y += p.vy;
+        if (p.trail) {
+          ctx.strokeStyle = p.c; ctx.lineWidth = p.r; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(ox - p.vx * 2, oy - p.vy * 2); ctx.lineTo(p.x, p.y); ctx.stroke();
+        } else {
+          ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    if (el < DURATION || rockets.length || sparks.length) raf = requestAnimationFrame(frame);
+    else cleanup();
+  };
+  const cleanup = () => {
+    cancelAnimationFrame(raf);
+    window.removeEventListener('resize', resize);
+    document.removeEventListener('popupopen', raise);
+    canvas.remove();
+  };
+  raf = requestAnimationFrame(frame);
+  setTimeout(cleanup, DURATION + 3000); // hard stop, even on slow devices
+  track('fireworks_play');
+}
+
+/* ---------------------------------------------------------
+   Diwali plan creatives: tabs per service, "Buy now" fills the pop-up
+   --------------------------------------------------------- */
+const PLAN_ICONS = {
+  'YouTube Views': 'i-youtube', 'YouTube Subscribers': 'i-users', 'YouTube Monetization': 'i-rupee',
+  'YouTube Monetization without views': 'i-rupee', 'Revenue Services': 'i-chart'
+};
+function initPlans() {
+  const tabs = $('[data-plan-tabs]'), grid = $('[data-plan-grid]');
+  if (!tabs || !grid) return;
+  const services = Object.keys(CONFIG.plans);
+
+  const render = (svc) => {
+    $$('button', tabs).forEach(b => b.setAttribute('aria-selected', String(b.dataset.svc === svc)));
+    grid.innerHTML = '';
+    CONFIG.plans[svc].forEach((label, i) => {
+      const [title, price] = label.split(' — ');
+      // "5,000 views" → big "5,000" + "views"; named plans ("Lite") stay whole
+      const m = title.match(/^([\d,.]+)\s+(.*)$/);
+      const card = document.createElement('article');
+      card.className = 'plan';
+      card.style.setProperty('--i', i);
+      card.innerHTML = `
+        <span class="plan__badge">🪔 Diwali Special</span>
+        <svg class="plan__icon" aria-hidden="true"><use href="#${PLAN_ICONS[svc] || 'i-youtube'}"/></svg>
+        <p class="plan__svc"></p>
+        <p class="plan__qty"></p>
+        <p class="plan__unit"></p>
+        <p class="plan__price"></p>
+        <button type="button" class="btn btn--white btn--block plan__buy">Buy now <svg class="ic"><use href="#i-arrow"/></svg></button>
+        <span class="plan__diya diya" aria-hidden="true"><span class="diya__flame"></span><span class="diya__bowl"></span></span>`;
+      $('.plan__svc', card).textContent = svc;
+      $('.plan__qty', card).textContent = m ? m[1] : title;
+      $('.plan__unit', card).textContent = m ? m[2] : 'plan';
+      $('.plan__price', card).textContent = price;
+      $('.plan__buy', card).setAttribute('aria-label', `Buy ${title} for ${price}`);
+      $('.plan__buy', card).addEventListener('click', () => buyPlan(svc, label));
+      grid.appendChild(card);
+    });
+  };
+
+  services.forEach(svc => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'plans__tab'; b.dataset.svc = svc;
+    b.setAttribute('role', 'tab');
+    b.textContent = svc.replace(/^YouTube /, '');
+    b.addEventListener('click', () => { render(svc); track('plan_tab', { service: svc }); });
+    tabs.appendChild(b);
+  });
+  render(services[0]);
+}
+function buyPlan(service, plan) {
+  const pop = $('[data-pop]'), form = $('#pop-form');
+  track('plan_buy_click', { service, plan });
+  if (!pop || !form || typeof pop.showModal !== 'function') { location.hash = '#claim'; return; }
+  form.elements.service.value = service;
+  form.elements.service.dispatchEvent(new Event('change'));
+  form.elements.plan.value = plan;
+  setError(form.elements.service, ''); setError(form.elements.plan, '');
+  if (!pop.open) pop.showModal();
+  track('popup_open', { trigger: 'buy_now' });
+  form.elements.name.focus();
 }
 
 /* ---------------------------------------------------------
@@ -575,6 +789,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initLeadForm();
   initQueryForm();
   initMobileBar();
+  initPlans();
+  initFireworks();
   initPopup();
   initThankYou();
   if ($('[data-countdown-inline], [data-countdown-boxes]')) {
