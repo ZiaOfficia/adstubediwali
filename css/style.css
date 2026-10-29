@@ -510,7 +510,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-family: var(--font-head); font-weight: 700; box-shadow: var(--glow);
 }
 .steps .ic { width: 28px; height: 28px; margin: 14px 0 16px; }
-.steps h3 { font-size: 18px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+.steps h3 { font-size: 18px; font-weight: 600; color: var(--heading); margin-bottom: 6px; }
 .steps p { color: var(--muted); font-size: 15px; }
 
 /* ---------- 7 · Proof ---------- */

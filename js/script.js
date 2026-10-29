@@ -16,7 +16,7 @@ const CONFIG = {
   thankYouUrl: 'thank-you.html',
 
   // Contact
-  phone: '+919026232414',
+  phone: '+918756655744',
   whatsapp: '917266024422', // default for floating / generic WhatsApp buttons; data-wa="91…" overrides per link
   whatsappText: "Hi AdsTube, I'd like to know more about the Diwali offer.",
 
@@ -47,7 +47,7 @@ const CONFIG = {
   // Regular (pre-Diwali) prices, shown struck through on the plan cards. Keyed by plan title.
   originalPrices: {
     '5,000 views': 750, '10,000 views': 1500, '20,000 views': 2600, '50,000 views': 5500,
-    '1,00,000 views': 10000, '10,00,000 views': 80000,
+    '1,00,000 views': 10000, '5,00,000 views': 40000, '10,00,000 views': 80000,
     '100 subscribers': 500, '200 subscribers': 1000, '500 subscribers': 2000, '1,000 subscribers': 4000,
     '2,000 hours + 2.5–3 lakh views': 26000, '3,000 hours + 4.5–5 lakh views': 36000, '4,000 hours + 5–6 lakh views': 45000,
     '2,000 hours': 8000, '3,000 hours': 12000, '4,000 hours': 15000,
