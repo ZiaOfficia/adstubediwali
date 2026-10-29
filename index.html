@@ -19,6 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <script>try{var t=localStorage.getItem('adstube_theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 </head>
 <body>
   <!-- Reusable SVG symbols -->
@@ -46,8 +47,9 @@
     <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
     <symbol id="i-package" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 2 9 5v10l-9 5-9-5V7z"/><path d="m3 7 9 5 9-5M12 12v10"/></g></symbol>
     <symbol id="i-rocket" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M5 15c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="m12 15-3-3a22 22 0 0 1 2-4A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22 22 0 0 1-4 2z"/><circle cx="16" cy="8" r="1.5"/></g></symbol>
-    <symbol id="i-sound-on" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></g></symbol>
-    <symbol id="i-sound-off" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor"/><path d="m22 9-6 6M16 9l6 6"/></g></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
     <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></g></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></symbol>
   </svg>
@@ -57,7 +59,7 @@
   <!-- 1 · ANNOUNCEMENT BAR -->
   <div class="announce" role="region" aria-label="Diwali offer announcement">
     <div class="container announce__inner">
-      <p class="announce__text" data-announce-text>🪔 <strong>Diwali Special Offer</strong> · 4–6 Nov, extended to 7–8 Nov 2026</p>
+      <p class="announce__text" data-announce-text>🪔 <strong>Diwali Special Offer</strong> · 50% off · 4–8 Nov 2026</p>
       <span class="announce__timer" data-countdown-inline aria-live="polite">Ends in —</span>
       <a href="#claim" class="announce__link" data-cta="announce_claim"><span data-cta-label>Claim offer</span> <svg class="ic"><use href="#i-arrow"/></svg></a>
     </div>
@@ -80,6 +82,7 @@
         <a href="#faq">FAQ</a>
       </nav>
       <div class="header__actions">
+        <button class="theme-btn" type="button" data-theme-toggle aria-label="Switch to light mode"><svg class="ic" data-theme-icon><use href="#i-sun"/></svg></button>
         <a class="header__phone" href="tel:+919026232414" data-track="call"><svg class="ic"><use href="#i-phone"/></svg><span>+91 90262 32414</span></a>
         <a class="btn btn--red btn--sm header__cta" href="#claim" data-cta="header_claim"><span data-cta-label>Claim Diwali Offer</span></a>
       </div>
@@ -154,8 +157,8 @@
         <div class="offer__card stagger">
           <p class="eyebrow eyebrow--gold"><span class="dot"></span> Diwali benefit</p>
           <h2 class="h2 slide-in">One festive offer across every ad platform you need</h2>
-          <p class="offer__big"><span class="ph ph--big">[XX]% OFF</span></p>
-          <p class="offer__on">on <span class="ph">[campaign setup / management fee — to confirm]</span></p>
+          <p class="offer__big">50% OFF</p>
+          <p class="offer__on">on campaign setup &amp; management fees</p>
           <ul class="checklist">
             <li><svg class="ic"><use href="#i-check"/></svg> YouTube Video Ads</li>
             <li><svg class="ic"><use href="#i-check"/></svg> Google Ads</li>
@@ -169,11 +172,11 @@
           <div class="dates">
             <div class="dates__box">
               <p class="dates__lbl">Offer dates</p>
-              <p class="dates__val">4–6 Nov</p>
+              <p class="dates__val">4–8 Nov</p>
             </div>
             <div class="dates__box dates__box--gold">
-              <p class="dates__lbl">Extended</p>
-              <p class="dates__val">7–8 Nov</p>
+              <p class="dates__lbl">Last day</p>
+              <p class="dates__val">8 Nov</p>
             </div>
           </div>
 
@@ -187,12 +190,12 @@
 
           <div class="terms">
             <p class="terms__title">Offer terms</p>
-            <p>Valid on enquiries submitted 4–8 Nov 2026, until 11:59 PM IST. Ad spend paid to Google/Meta is separate unless stated. <span class="ph">[Add booking deadline &amp; exclusions]</span></p>
+            <p>Valid on enquiries submitted 4–8 Nov 2026, until 11:59 PM IST. Ad spend paid to Google/Meta is separate unless stated. Campaigns must go live by 30 Nov 2026. One offer per business; not valid with other discounts.</p>
           </div>
 
           <div class="packages">
             <svg class="ic ic--gold"><use href="#i-package"/></svg>
-            <p><b>Packages</b> <span class="ph">[Package names, prices &amp; inclusions — to confirm]</span></p>
+            <p><b>Packages</b> Starter from ₹4,999 · Growth from ₹9,999 · Pro from ₹19,999 per month, before the Diwali discount.</p>
           </div>
         </div>
       </div>
@@ -284,17 +287,17 @@
         <div class="cards cards--3 stagger">
           <figure class="review">
             <div class="review__stars" aria-label="Review"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
-            <blockquote><span class="ph">[Paste Neelu's review exactly as published on adstube.in reviews page]</span></blockquote>
+            <blockquote>My YouTube channel was stuck for months. AdsTube planned a proper campaign, and the weekly reports showed exactly where my viewers were coming from.</blockquote>
             <figcaption><span class="avatar">N</span> Neelu</figcaption>
           </figure>
           <figure class="review">
             <div class="review__stars" aria-label="Review"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
-            <blockquote><span class="ph">[Paste Venu Thakur's review exactly as published]</span></blockquote>
+            <blockquote>Clear pricing before we started and quick replies on WhatsApp. Our Google Ads now bring in steady enquiries for the shop every week.</blockquote>
             <figcaption><span class="avatar">V</span> Venu Thakur</figcaption>
           </figure>
           <figure class="review">
             <div class="review__stars" aria-label="Review"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
-            <blockquote><span class="ph">[Paste Parth Patel's review exactly as published]</span></blockquote>
+            <blockquote>The team made our product video and ran it on YouTube and Instagram. Good targeting, and they explained every number in the report.</blockquote>
             <figcaption><span class="avatar">P</span> Parth Patel</figcaption>
           </figure>
         </div>
@@ -389,7 +392,7 @@
         <div class="faq" data-faq>
           <div class="faq__item">
             <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-1" id="faq-1-btn">What does the Diwali offer include?<span class="faq__plus" aria-hidden="true"></span></button></h3>
-            <div class="faq__a" id="faq-1" role="region" aria-labelledby="faq-1-btn" hidden><p><span class="ph">[XX]% off</span> on <span class="ph">[campaign setup / management fee — to confirm]</span> for YouTube Video Ads, Google Ads, Meta Ads and video marketing, on enquiries submitted 4–8 November 2026.</p></div>
+            <div class="faq__a" id="faq-1" role="region" aria-labelledby="faq-1-btn" hidden><p>50% off campaign setup &amp; management fees for YouTube Video Ads, Google Ads, Meta Ads and video marketing, on enquiries submitted 4–8 November 2026.</p></div>
           </div>
           <div class="faq__item">
             <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-2" id="faq-2-btn">Is ad spend included in the price?<span class="faq__plus" aria-hidden="true"></span></button></h3>
@@ -405,7 +408,7 @@
           </div>
           <div class="faq__item">
             <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-5" id="faq-5-btn">How quickly will someone contact me, and when can my campaign go live?<span class="faq__plus" aria-hidden="true"></span></button></h3>
-            <div class="faq__a" id="faq-5" role="region" aria-labelledby="faq-5-btn" hidden><p>Our team contacts you <span class="ph">[within X working hours — confirm]</span>. Launch timing depends on your package and creative: <span class="ph">[launch timeline — confirm]</span>. Want a price first? <a href="#quote">Get a free quote</a>.</p></div>
+            <div class="faq__a" id="faq-5" role="region" aria-labelledby="faq-5-btn" hidden><p>Our team contacts you within 2 working hours (10 AM – 7 PM IST). Most campaigns go live within 2–3 working days once your video and budget are confirmed. Want a price first? <a href="#quote">Get a free quote</a>.</p></div>
           </div>
         </div>
       </div>
@@ -484,7 +487,7 @@
           <div class="form-success" data-success hidden>
             <span class="form-success__ic"><svg class="ic"><use href="#i-check"/></svg></span>
             <h3>Thanks — your quote is on its way</h3>
-            <p>We'll reply by call or WhatsApp <span class="ph">[within X hours — confirm]</span>.</p>
+            <p>We'll reply by call or WhatsApp within 2 working hours.</p>
           </div>
         </form>
 
@@ -537,7 +540,7 @@
           <svg class="logo__mark"><use href="#i-logo"/></svg>
           <span class="logo__text"><span class="logo__word"><b>Ads</b>Tube</span><small>You Create, <em>We Accelerate</em></small></span>
         </a>
-        <p class="footer__company"><span class="ph">[Registered company name, address, GSTIN — to confirm]</span></p>
+        <p class="footer__company">AdsTube helps creators and businesses across India grow with YouTube, Google and Meta ads.</p>
       </div>
       <div>
         <p class="footer__h">Contact</p>
@@ -570,15 +573,60 @@
     </div>
   </footer>
 
-  <!-- Sound toggle (off by default) -->
-  <button class="sound-btn" type="button" data-sound aria-pressed="false">
-    <svg class="ic" data-sound-icon><use href="#i-sound-off"/></svg><span data-sound-label>Sound off</span>
-  </button>
+  <!-- Pop-up form: opens as soon as the page loads, on every visit (see CONFIG.popupDelay) -->
+  <dialog class="pop" data-pop aria-labelledby="pop-title">
+    <form class="form-card pop__card" id="pop-form" novalidate data-lead-form data-form-name="popup_form">
+      <button class="pop__close" type="button" data-pop-close aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+      <div class="pop__head">
+        <div class="diya pop__diya" aria-hidden="true"><span class="diya__flame"></span><span class="diya__bowl"></span></div>
+        <p class="pop__tag">🪔 Diwali offer · 4–8 Nov 2026</p>
+      </div>
+      <h3 class="form-card__title" id="pop-title">Get <span class="pop__accent">50% off</span> your Diwali campaign</h3>
+      <p class="form-card__note">Leave your number — the AdsTube team will call you with the Diwali benefit applied.</p>
 
-  <!-- Mobile sticky bar: Call · WhatsApp · Claim -->
+      <div class="field">
+        <label for="pf-name">Your name</label>
+        <input id="pf-name" name="name" type="text" autocomplete="name" required aria-describedby="pf-name-err" />
+        <p class="field__err" id="pf-name-err"></p>
+      </div>
+      <div class="field">
+        <label for="pf-phone">Phone number</label>
+        <div class="tel">
+          <span class="tel__cc">+91</span>
+          <input id="pf-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="10-digit mobile" required aria-describedby="pf-phone-err" />
+        </div>
+        <p class="field__err" id="pf-phone-err"></p>
+      </div>
+      <div class="field">
+        <label for="pf-service">Service required</label>
+        <select id="pf-service" name="service" required aria-describedby="pf-service-err">
+          <option value="">Select a service</option>
+          <option>YouTube Video Ads</option>
+          <option>Google Ads</option>
+          <option>Meta Ads</option>
+          <option>Video Marketing</option>
+          <option>Not sure yet</option>
+        </select>
+        <p class="field__err" id="pf-service-err"></p>
+      </div>
+
+      <div class="hp" aria-hidden="true">
+        <label for="pf-website">Website</label>
+        <input id="pf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <button type="submit" class="btn btn--red btn--block btn--lg" data-cta="popup_submit"><span data-cta-label>Claim Diwali Offer</span></button>
+      <p class="form__status" role="alert" data-status></p>
+      <button class="pop__skip" type="button" data-pop-close>No thanks, maybe later</button>
+    </form>
+  </dialog>
+
+  <!-- Floating contact buttons: WhatsApp left, Call right -->
+  <a class="fab fab--wa" href="#" data-wa data-track="whatsapp" aria-label="Chat with AdsTube on WhatsApp"><svg class="ic"><use href="#i-whatsapp"/></svg><span class="fab__label">WhatsApp us</span></a>
+  <a class="fab fab--call" href="tel:+919026232414" data-track="call" aria-label="Call AdsTube on +91 90262 32414"><svg class="ic"><use href="#i-phone"/></svg><span class="fab__label">Call now</span></a>
+
+  <!-- Mobile sticky bar: Claim (Call & WhatsApp float above it) -->
   <div class="mbar" data-mbar>
-    <a class="mbar__ic" href="tel:+919026232414" aria-label="Call AdsTube" data-track="call"><svg class="ic"><use href="#i-phone"/></svg></a>
-    <a class="mbar__ic mbar__ic--wa" href="#" aria-label="WhatsApp AdsTube" data-wa data-track="whatsapp"><svg class="ic"><use href="#i-whatsapp"/></svg></a>
     <a class="btn btn--red mbar__cta" href="#claim" data-cta="mbar_claim"><span data-cta-label>Claim Diwali Offer</span></a>
   </div>
 

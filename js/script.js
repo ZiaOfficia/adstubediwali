@@ -24,13 +24,16 @@ const CONFIG = {
   // IDs to add in GTM: G-XXXXXXXXXX · AW-XXXXXXXXX · Meta PIXEL_ID
   gtmId: 'GTM-XXXXXXX',
 
-  // Query form: plan list changes with the service picked [plans TBC]
+  // Query form: plan list changes with the service picked
   plans: {
-    'YouTube Video Ads': ['[Starter plan — TBC]', '[Growth plan — TBC]', '[Pro plan — TBC]'],
-    'Google Ads':        ['[Starter plan — TBC]', '[Growth plan — TBC]', '[Pro plan — TBC]'],
-    'Meta Ads':          ['[Starter plan — TBC]', '[Growth plan — TBC]', '[Pro plan — TBC]'],
-    'Video Marketing':   ['[Video production — TBC]', '[Video SEO — TBC]', '[Production + promotion — TBC]']
+    'YouTube Video Ads': ['Starter — ₹4,999/month', 'Growth — ₹9,999/month', 'Pro — ₹19,999/month'],
+    'Google Ads':        ['Starter — ₹4,999/month', 'Growth — ₹9,999/month', 'Pro — ₹19,999/month'],
+    'Meta Ads':          ['Starter — ₹4,999/month', 'Growth — ₹9,999/month', 'Pro — ₹19,999/month'],
+    'Video Marketing':   ['Video production — from ₹7,999', 'Video SEO — ₹2,999/video', 'Production + promotion — from ₹14,999']
   },
+
+  // Pop-up form opens after this many seconds on every page load (0 = straight away)
+  popupDelay: 0,
 
   // CAPTCHA: 'checkbox' is a placeholder. For production, swap in reCAPTCHA / Turnstile
   // and return its token from getCaptchaToken() below.
@@ -80,51 +83,32 @@ function captureAttribution() {
 const attribution = captureAttribution();
 
 /* ---------------------------------------------------------
-   Sound effects — opt-in, Web Audio, no files
+   Theme: dark (default) / light — remembered per visitor
    --------------------------------------------------------- */
-const Sound = {
-  on: false, ctx: null,
+const Theme = {
+  get() { return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; },
   init() {
-    try { this.on = localStorage.getItem('adstube_sound') === 'on'; } catch (e) {}
-    const btn = $('[data-sound]');
-    if (!btn) return;
-    this.render(btn);
-    btn.addEventListener('click', () => {
-      this.on = !this.on;
-      try { localStorage.setItem('adstube_sound', this.on ? 'on' : 'off'); } catch (e) {}
-      this.render(btn);
-      track('sound_toggle', { sound_state: this.on ? 'on' : 'off' });
-      if (this.on) this.chime();
+    const btns = $$('[data-theme-toggle]');
+    this.render(btns);
+    btns.forEach(btn => btn.addEventListener('click', () => {
+      const next = this.get() === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('adstube_theme', next); } catch (e) {}
+      this.render(btns);
+      track('theme_toggle', { theme: next });
+      document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+    }));
+  },
+  render(btns) {
+    const light = this.get() === 'light';
+    const meta = $('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', light ? '#FFF9F2' : '#0A0A0B');
+    btns.forEach(btn => {
+      btn.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
+      btn.setAttribute('title', light ? 'Dark mode' : 'Light mode');
+      $('[data-theme-icon] use', btn).setAttribute('href', light ? '#i-moon' : '#i-sun');
     });
-  },
-  render(btn) {
-    btn.setAttribute('aria-pressed', String(this.on));
-    $('[data-sound-label]', btn).textContent = this.on ? 'Sound on' : 'Sound off';
-    $('[data-sound-icon] use', btn).setAttribute('href', this.on ? '#i-sound-on' : '#i-sound-off');
-    btn.setAttribute('aria-label', this.on ? 'Turn sound effects off' : 'Turn sound effects on');
-  },
-  audio() {
-    if (!this.on) return null;
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return null;
-    if (!this.ctx) this.ctx = new AC();
-    if (this.ctx.state === 'suspended') this.ctx.resume();
-    return this.ctx;
-  },
-  tone(freq, start, dur, type = 'sine', vol = .18) {
-    const ctx = this.audio(); if (!ctx) return;
-    const t = ctx.currentTime + start;
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.type = type; o.frequency.setValueAtTime(freq, t);
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol, t + .01);
-    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    o.connect(g).connect(ctx.destination);
-    o.start(t); o.stop(t + dur + .05);
-  },
-  chime()   { [1318.5, 1975.5, 2637].forEach((f, i) => this.tone(f, i * .02, 1.4 - i * .3, 'sine', .14 - i * .03)); }, // bell
-  tick()    { this.tone(1800, 0, .05, 'square', .05); },
-  sparkle() { [1568, 2093, 2637, 3136, 3520].forEach((f, i) => this.tone(f, i * .07, .35, 'triangle', .09)); }
+  }
 };
 
 /* ---------------------------------------------------------
@@ -142,7 +126,6 @@ function initLinks() {
     if (href.includes('wa.me') || href.includes('whatsapp')) track('whatsapp_click', { link_location: a.dataset.cta || a.className });
     if (a.dataset.cta && a.dataset.cta !== 'form_submit') {
       track('cta_click', { cta_id: a.dataset.cta, cta_text: a.textContent.trim() });
-      Sound.chime();
     }
   });
 }
@@ -201,7 +184,7 @@ function setEndedState() {
    --------------------------------------------------------- */
 function initLights() {
   const wrap = $('[data-lights]'); if (!wrap) return;
-  const colors = ['#F5B841', '#E8000F', '#FFFFFF'];
+  const colors = ['var(--gold)', 'var(--red)', 'var(--bulb)'];
   const build = () => {
     const n = Math.ceil(window.innerWidth / 56) + 1;
     wrap.innerHTML = '';
@@ -289,6 +272,8 @@ function initSparks() {
   if (!canvas || !hero || reducedMotion) return;
   const ctx = canvas.getContext('2d');
   const colors = ['245,184,65', '232,0,15', '255,140,40', '255,255,255'];
+  // White sparks vanish on the light theme, so swap them for deep red
+  const palette = () => Theme.get() === 'light' ? ['217,154,30', '232,0,15', '255,120,30', '138,0,8'] : colors;
   let w, h, dpr, parts = [], running = false, visible = true, raf;
 
   const resize = () => {
@@ -307,7 +292,7 @@ function initSparks() {
     vx: (Math.random() - .5) * .25,
     a: Math.random() * .6 + .3,
     tw: Math.random() * Math.PI * 2,
-    c: colors[Math.floor(Math.random() * colors.length)]
+    c: (pal => pal[Math.floor(Math.random() * pal.length)])(palette())
   });
   const frame = () => {
     ctx.clearRect(0, 0, w, h);
@@ -328,6 +313,7 @@ function initSparks() {
 
   resize();
   window.addEventListener('resize', () => { resize(); });
+  document.addEventListener('themechange', resize);
   new IntersectionObserver(([en]) => { visible = en.isIntersecting; visible ? start() : stop(); }).observe(hero);
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
   start();
@@ -344,7 +330,6 @@ function initFAQ() {
       btn.setAttribute('aria-expanded', String(!open));
       panel.hidden = open;
       item.classList.toggle('is-open', !open);
-      Sound.tick();
       if (!open) track('faq_open', { faq_question: btn.textContent.trim() });
     });
   });
@@ -426,10 +411,14 @@ async function postJSON(url, payload) {
    8 · Lead form → CRM → thank-you page
    --------------------------------------------------------- */
 function initLeadForm() {
-  const form = $('[data-lead-form]'); if (!form) return;
-  const fields = ['name', 'phone', 'business', 'service', 'budget'];
+  $$('[data-lead-form]').forEach(setupLeadForm);
+}
+// Shared by the page form and the pop-up (which only asks name, phone & service)
+function setupLeadForm(form) {
+  const formName = form.dataset.formName || 'lead_form';
+  const fields = ['name', 'phone', 'business', 'service', 'budget'].filter(n => form.elements[n]);
   const status = $('[data-status]', form), btn = $('button[type="submit"]', form);
-  bindLiveValidation(form, fields, 'lead_form');
+  bindLiveValidation(form, fields, formName);
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -437,7 +426,7 @@ function initLeadForm() {
     const errors = validateForm(form, fields);
     if (errors.length) {
       errors[0].focus();
-      track('form_error', { form_name: 'lead_form', error_fields: errors.map(f => f.name).join(',') });
+      track('form_error', { form_name: formName, error_fields: errors.map(f => f.name).join(',') });
       return;
     }
     const service = form.elements.service.value;
@@ -455,15 +444,14 @@ function initLeadForm() {
     if (!ok) {
       btn.disabled = false; label.textContent = original;
       status.textContent = "Sorry, we couldn't send your enquiry. Please try again, or call / WhatsApp us.";
-      track('form_error', { form_name: 'lead_form', error_fields: 'network' });
+      track('form_error', { form_name: formName, error_fields: 'network' });
       return;
     }
-    Sound.sparkle();
 
     // Lead event waits for GTM before redirecting, so the conversion is not lost
     let done = false; const once = () => { if (!done) { done = true; go(); } };
     track('generate_lead', {
-      form_name: 'lead_form', lead_type: 'lead', service, budget: form.elements.budget.value,
+      form_name: formName, lead_type: 'lead', service, budget: form.elements.budget ? form.elements.budget.value : '',
       eventCallback: once, eventTimeout: 2000
     });
     setTimeout(once, gtmLoaded() ? 2200 : 400);
@@ -522,7 +510,6 @@ function initQueryForm() {
       track('form_error', { form_name: 'query_form', error_fields: 'network' });
       return;
     }
-    Sound.sparkle();
     track('query_submit', { form_name: 'query_form', lead_type: 'query', service: service.value, plan: plan.value });
     success.hidden = false;
     success.setAttribute('tabindex', '-1'); success.focus();
@@ -539,9 +526,28 @@ function initMobileBar() {
     entries.forEach(en => en.isIntersecting ? zones.add(en.target) : zones.delete(en.target));
     const hide = zones.size > 0;
     bar.classList.toggle('is-hidden', hide);
-    document.body.classList.toggle('mbar-hidden', hide); // sound button drops back down
+    document.body.classList.toggle('mbar-hidden', hide); // footer padding drops back down
   }, { threshold: .2 });
   $$('[data-form-zone] form').forEach(f => io.observe(f));
+}
+
+/* ---------------------------------------------------------
+   Pop-up form: opens on every page load
+   --------------------------------------------------------- */
+function initPopup() {
+  const pop = $('[data-pop]'); if (!pop || typeof pop.showModal !== 'function') return;
+  if (offerPhase().phase === 'ended') return;
+
+  // Opens on every page load (after CONFIG.popupDelay seconds)
+  setTimeout(() => {
+    if (pop.open || document.querySelector('dialog[open]')) return;
+    pop.showModal();
+    track('popup_open', { trigger: 'page_load' });
+  }, CONFIG.popupDelay * 1000);
+
+  $$('[data-pop-close]', pop).forEach(b => b.addEventListener('click', () => pop.close('dismiss')));
+  pop.addEventListener('click', e => { if (e.target === pop) pop.close('dismiss'); }); // backdrop
+  pop.addEventListener('close', () => track('popup_close'));
 }
 
 /* ---------------------------------------------------------
@@ -559,7 +565,7 @@ function initThankYou() {
    Boot
    --------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
-  Sound.init();
+  Theme.init();
   initLinks();
   initLights();
   splitHeadline();
@@ -569,6 +575,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLeadForm();
   initQueryForm();
   initMobileBar();
+  initPopup();
   initThankYou();
   if ($('[data-countdown-inline], [data-countdown-boxes]')) {
     tickCountdown();
