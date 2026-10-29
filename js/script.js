@@ -17,7 +17,7 @@ const CONFIG = {
 
   // Contact
   phone: '+919026232414',
-  whatsapp: '919120647421',
+  whatsapp: '917266024422', // default for floating / generic WhatsApp buttons; data-wa="91…" overrides per link
   whatsappText: "Hi AdsTube, I'd like to know more about the Diwali offer.",
 
   // Google Tag Manager container ID (GA4, Google Ads & Meta Pixel are configured inside GTM).
@@ -137,8 +137,7 @@ const Theme = {
    Contact links (tel / WhatsApp) + CTA tracking
    --------------------------------------------------------- */
 function initLinks() {
-  const waUrl = 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.whatsappText);
-  $$('[data-wa]').forEach(a => { a.href = waUrl; a.target = '_blank'; a.rel = 'noopener'; });
+  $$('[data-wa]').forEach(a => { a.href = 'https://wa.me/' + (a.dataset.wa || CONFIG.whatsapp) + '?text=' + encodeURIComponent(CONFIG.whatsappText); a.target = '_blank'; a.rel = 'noopener'; });
 
   document.addEventListener('click', e => {
     const a = e.target.closest('a, button');
