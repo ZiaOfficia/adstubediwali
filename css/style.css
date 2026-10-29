@@ -375,6 +375,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .offer__card .h2 { margin-bottom: 26px; font-size: clamp(26px, 3vw, 36px); }
 .offer__big { font-family: var(--font-head); font-weight: 800; color: var(--gold); font-size: clamp(44px, 6vw, 72px); line-height: 1.1; }
+.offer__upto { display: block; font-size: .36em; letter-spacing: .14em; text-transform: uppercase; line-height: 1.4; }
 .offer__on { margin: 12px 0 26px; color: var(--muted); }
 .checklist { display: grid; gap: 12px; margin-bottom: 30px; }
 .checklist li { display: flex; align-items: center; gap: 12px; font-weight: 500; }
@@ -402,8 +403,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .packages b { color: var(--heading); margin-right: 4px; }
 
 /* ---------- Diwali plan creatives ---------- */
-.plans__tabs { display: flex; gap: 10px; margin: -12px 0 28px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
-.plans__tabs::-webkit-scrollbar { display: none; }
+/* Tabs wrap onto extra rows so every service is visible without sideways scrolling */
+.plans__tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: -12px 0 28px; }
 .plans__tab {
   flex: none; min-height: 44px; padding: 0 18px; border-radius: 999px; font-weight: 600; font-size: 14px;
   background: var(--surface); border: 1px solid var(--line); color: var(--text-2); transition: border-color .2s, background .2s, color .2s;
@@ -445,6 +446,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .plan__qty { font-family: var(--font-head); font-weight: 800; font-size: 44px; line-height: 1.05; letter-spacing: -.02em; margin-top: 4px; }
 .plan__unit { font-weight: 600; font-size: 15px; color: rgba(255,255,255,.88); min-height: 2.6em; }
 .plan__price { margin: auto 0 14px; padding-top: 12px; font-family: var(--font-head); font-weight: 800; font-size: 34px; color: #FFD36B; text-shadow: 0 0 22px rgba(255,190,60,.55); }
+.plan--has-was .plan__price { margin-top: 0; padding-top: 2px; }
+.plan__was { margin: auto 0 0; padding-top: 12px; font-weight: 600; font-size: 16px; color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 8px; }
+.plan__was[hidden] { display: none; }
+.plan__was s { text-decoration-color: #FFD873; text-decoration-thickness: 2px; }
+.plan__off { font-size: 12px; font-weight: 800; color: #2B0004; background: #FFD873; border-radius: 999px; padding: 2px 8px; }
 .plan__buy { position: relative; z-index: 1; }
 .plan__diya { position: absolute; right: 18px; bottom: 76px; transform: scale(.55); transform-origin: bottom right; pointer-events: none; }
 
@@ -773,6 +779,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 @media (max-width: 680px) {
+  .plans__tabs { gap: 8px; }
+  .plans__tab { flex: 1 1 auto; padding: 0 14px; }
   :root { --mbar-h: 76px; }
   .container, .container--narrow { width: calc(100% - 32px); }
   .section { padding: 72px 0; }

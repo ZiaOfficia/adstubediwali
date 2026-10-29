@@ -6,7 +6,7 @@
 const CONFIG = {
   // Offer window (IST). Countdown: "Starts in" → "Ends in" → "Offer ended".
   offerStart: '2026-11-04T00:00:00+05:30',
-  offerEnd:   '2026-11-08T23:59:59+05:30',
+  offerEnd:   '2026-11-06T23:59:59+05:30',
 
   // Form endpoints — your CRM / webhook URL [TBC]. Leave '' to skip sending (demo mode).
   leadEndpoint:  '',
@@ -42,6 +42,16 @@ const CONFIG = {
     'Revenue Services': [
       'Test — ₹1,999', 'Lite — ₹3,999', 'Grow — ₹6,999', 'Amplify — ₹12,999', 'Pro — ₹24,999'
     ]
+  },
+
+  // Regular (pre-Diwali) prices, shown struck through on the plan cards. Keyed by plan title.
+  originalPrices: {
+    '5,000 views': 750, '10,000 views': 1500, '20,000 views': 2600, '50,000 views': 5500,
+    '1,00,000 views': 10000, '10,00,000 views': 80000,
+    '100 subscribers': 500, '200 subscribers': 1000, '500 subscribers': 2000, '1,000 subscribers': 4000,
+    '2,000 hours + 2.5–3 lakh views': 26000, '3,000 hours + 4.5–5 lakh views': 36000, '4,000 hours + 5–6 lakh views': 45000,
+    '2,000 hours': 8000, '3,000 hours': 12000, '4,000 hours': 15000,
+    'Test': 2500, 'Lite': 5000, 'Grow': 9000, 'Amplify': 16000, 'Pro': 30000
   },
 
   // Pop-up form opens after this many seconds on every page load (0 = straight away)
@@ -185,7 +195,7 @@ function setEndedState() {
   const ann = $('[data-announce-text]');
   if (ann) ann.innerHTML = '🪔 <strong>The AdsTube Diwali offer has ended</strong> · Enquire for current packages';
   const ft = $('[data-final-title]'); if (ft) ft.textContent = 'The Diwali offer has closed';
-  const fs = $('[data-final-sub]');   if (fs) fs.textContent = 'The offer closed at 11:59 PM IST on 8 November 2026. Enquire now for current packages.';
+  const fs = $('[data-final-sub]');   if (fs) fs.textContent = 'The offer closed at 11:59 PM IST on 6 November 2026. Enquire now for current packages.';
   const fk = $('[data-final-kicker]'); if (fk) fk.textContent = 'Offer ended';
   const ft2 = $('.form-card__title', $('[data-lead-form]') || document);
   if (ft2 && $('[data-lead-form]')) ft2.textContent = 'Enquire Now';
@@ -556,6 +566,18 @@ function initPopup() {
   $$('[data-pop-close]', pop).forEach(b => b.addEventListener('click', () => pop.close('dismiss')));
   pop.addEventListener('click', e => { if (e.target === pop) pop.close('dismiss'); }); // backdrop
   pop.addEventListener('close', () => track('popup_close'));
+
+  // Every "Claim Diwali Offer" link opens the pop-up instead of scrolling to the form
+  $$('a[href="#claim"]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    if (!pop.open) {
+      pop.showModal();
+      document.dispatchEvent(new Event('popupopen'));
+    }
+    track('popup_open', { trigger: a.dataset.cta || 'claim_link' });
+    $('#pop-form').elements.name.focus();
+  }));
+
   if (offerPhase().phase === 'ended') return;
 
   // Opens on every page load (after CONFIG.popupDelay seconds)
@@ -728,6 +750,7 @@ function initPlans() {
         <p class="plan__svc"></p>
         <p class="plan__qty"></p>
         <p class="plan__unit"></p>
+        <p class="plan__was" hidden><s></s> <span class="plan__off"></span></p>
         <p class="plan__price"></p>
         <button type="button" class="btn btn--white btn--block plan__buy">Buy now <svg class="ic"><use href="#i-arrow"/></svg></button>
         <span class="plan__diya diya" aria-hidden="true"><span class="diya__flame"></span><span class="diya__bowl"></span></span>`;
@@ -735,7 +758,17 @@ function initPlans() {
       $('.plan__qty', card).textContent = m ? m[1] : title;
       $('.plan__unit', card).textContent = m ? m[2] : 'plan';
       $('.plan__price', card).textContent = price;
-      $('.plan__buy', card).setAttribute('aria-label', `Buy ${title} for ${price}`);
+      const was = CONFIG.originalPrices[title];
+      const now = Number(price.replace(/[^\d]/g, ''));
+      if (was && now && was > now) {
+        const wasEl = $('.plan__was', card);
+        $('s', wasEl).textContent = '₹' + was.toLocaleString('en-IN');
+        $('s', wasEl).setAttribute('aria-label', `Regular price ₹${was.toLocaleString('en-IN')}`);
+        $('.plan__off', card).textContent = `${Math.round((1 - now / was) * 100)}% off`;
+        wasEl.hidden = false;
+        card.classList.add('plan--has-was');
+      }
+      $('.plan__buy', card).setAttribute('aria-label', `Buy ${title} for ${price}` + (was && was > now ? ` (regular ₹${was.toLocaleString('en-IN')})` : ''));
       $('.plan__buy', card).addEventListener('click', () => buyPlan(svc, label));
       grid.appendChild(card);
     });
