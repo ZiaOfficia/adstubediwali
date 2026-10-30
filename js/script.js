@@ -8,9 +8,9 @@ const CONFIG = {
   offerStart: '2026-11-04T00:00:00+05:30',
   offerEnd:   '2026-11-06T23:59:59+05:30',
 
-  // Form endpoints — your CRM / webhook URL [TBC]. Leave '' to skip sending (demo mode).
-  leadEndpoint:  '',
-  queryEndpoint: '',
+  // Form endpoints — Google Apps Script web app (lead_type in the payload tells them apart). Leave '' to skip sending (demo mode).
+  leadEndpoint:  'https://script.google.com/macros/s/AKfycbynCiU2qKEIkTVrq5s2ktEWfyzefPrdGRBNjt1vUKk_b6CbW77K92KaxWvd5lxp49s11A/exec',
+  queryEndpoint: 'https://script.google.com/macros/s/AKfycbynCiU2qKEIkTVrq5s2ktEWfyzefPrdGRBNjt1vUKk_b6CbW77K92KaxWvd5lxp49s11A/exec',
 
   // Where the lead form redirects after a successful submit
   thankYouUrl: 'thank-you.html',
@@ -433,8 +433,10 @@ async function postJSON(url, payload) {
   if (!url) { console.info('[AdsTube] No endpoint set in CONFIG — payload:', payload); return true; }
   const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 10000);
   try {
-    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: ctrl.signal, keepalive: true });
-    return res.ok;
+    // text/plain avoids a CORS preflight, which Apps Script can't answer; the body is still JSON
+    const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload), signal: ctrl.signal, keepalive: true });
+    // Apps Script always answers 200, so a failed save only shows up in the body
+    return res.ok && (await res.json()).ok === true;
   } catch (e) { return false; }
   finally { clearTimeout(t); }
 }
