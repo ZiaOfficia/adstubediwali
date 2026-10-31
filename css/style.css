@@ -772,6 +772,28 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .ty__steps li { display: flex; gap: 12px; align-items: flex-start; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; font-size: 15px; }
 .ty__steps span { width: 26px; height: 26px; border-radius: 50%; background: var(--red); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: none; }
 .ty__ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+/* Legal pages (privacy, terms, refund, disclaimer) */
+.legal__top { background: var(--surface); border-bottom: 1px solid var(--line); }
+.legal__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: var(--header-h); }
+.legal__back { font-size: 14px; font-weight: 600; color: var(--red); }
+.legal__back:hover { text-decoration: underline; }
+.legal { padding: 48px 0 64px; color: var(--text-2); }
+.legal h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 800; letter-spacing: -.02em; color: var(--heading); margin-bottom: 16px; }
+.legal h2 { font-size: 21px; font-weight: 700; color: var(--heading); margin: 36px 0 10px; }
+.legal h3 { font-size: 17px; font-weight: 700; color: var(--heading); margin: 22px 0 8px; }
+.legal p + p, .legal ul + p, .legal p + ul { margin-top: 12px; }
+.legal__lead { font-size: 18px; color: var(--text); }
+.legal .container > ul { list-style: disc; padding-left: 22px; display: grid; gap: 8px; }
+.legal__contact { margin-top: 44px; padding: 8px 24px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.legal__contact h2 { margin-top: 18px; }
+.legal__contact ul { display: grid; gap: 6px; }
+.legal__contact a { color: var(--red); font-weight: 600; overflow-wrap: anywhere; }
+.legal__contact a:hover { text-decoration: underline; }
+.legal__foot { background: var(--bg-deep); border-top: 1px solid var(--line); padding: 28px 0; font-size: 14px; color: var(--muted); }
+.legal__foot nav { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-bottom: 12px; }
+.legal__foot a:hover { color: var(--heading); }
+.legal__foot a[aria-current="page"] { color: var(--red); font-weight: 600; }
 .btn--wa { background: var(--wa); color: #fff; box-shadow: 0 10px 30px rgba(37,211,102,.3); }
 .btn--wa:hover { transform: translateY(-2px); }
 
